@@ -20,7 +20,16 @@ class IngestTest(TestCase):
         self.assertEqual(product_object['url'], 'http://click.linksynergy.com/link?id=e*uXPA8KxEg&offerid=301488.652286&type=15&murl=https%3A%2F%2Fwww.notonthehighstreet.com%2Fgumon%2Fproduct%2Fsports-lovers%3FistCompanyId%3Daa76f5e6-d733-4e56-8409-574cea196cc9%26istItemId%3Dxmxqqmpqra%26istBid%3Dt')
 
     def test_save(self):
-        product = {'name': 'Paper Brooch', 'anniversary': 1, 'price': 20.5, 'image': 'https://images.manmadediy.com/k4tyv_A2hfEVyU6DyExIcpYzbqs=/800x0/filters:no_upscale()/http://s3.amazonaws.com/manmadediy-uploads-production/photos/5716/diy_paper_plane_01.jpg' }
-        Product.objects.create(name=product['name'], anniversary=product['anniversary'], price=product['price'], image=product['image'])
+        ingest = Command()
+        product = {'id': 1, 'name': 'Paper Brooch', 'anniversary': 1, 'price': 20.5, 'image': 'https://images.manmadediy.com/k4tyv_A2hfEVyU6DyExIcpYzbqs=/800x0/filters:no_upscale()/http://s3.amazonaws.com/manmadediy-uploads-production/photos/5716/diy_paper_plane_01.jpg', 'url': 'www.test.com', 'description': 'test' }
+        ingest.save_product(product)
         self.assertEqual((Product.objects.all().count()), 1)
         self.assertEqual((Product.objects.get(name='Paper Brooch').anniversary), 1)
+
+    def test_is_new_product(self):
+        ingest = Command()
+        product = {'id': 1, 'name': 'Paper Brooch', 'anniversary': 1, 'price': 20.5, 'image': 'https://images.manmadediy.com/k4tyv_A2hfEVyU6DyExIcpYzbqs=/800x0/filters:no_upscale()/http://s3.amazonaws.com/manmadediy-uploads-production/photos/5716/diy_paper_plane_01.jpg', 'url': 'www.test.com', 'description': 'test' }
+        product2 = {'id': 2, 'name': 'Gold Brooch', 'anniversary': 50, 'price': 200.5, 'image': 'https://images.manmadediy.com/k4tyv_A2hfEVyU6DyExIcpYzbqs=/800x0/filters:no_upscale()/http://s3.amazonaws.com/manmadediy-uploads-production/photos/5716/diy_paper_plane_01.jpg', 'url': 'www.test2.com', 'description': 'test2' }
+        ingest.save_product(product)
+        self.assertEqual(ingest.is_new_product(product), False)
+        self.assertEqual(ingest.is_new_product(product2), True)

@@ -23,5 +23,6 @@ router.register(r'products', views.ProductViewSet)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^', include(router.urls))
+    url(r'^', include(router.urls)),
+    url(r'^$', views.api_root)
 ]

@@ -16,21 +16,32 @@ class FTPDownloader:
         zipped_filename = os.path.join(settings.BASE_DIR, 'downloaded_feeds', '%s.txt.gz' % directory)
         unzipped_filename = os.path.join(settings.BASE_DIR, 'downloaded_feeds', '%s.csv' % directory)
         ftp = FTP(server)
+        print 'Connecting to FTP Server...'
         ftp.login(username, password)
+        print 'Connected'
+        print 'Downloading file...'
         ftp.retrbinary('RETR %s' % server_filename, open(zipped_filename, 'wb').write)
+        print 'File downloaded successfully'
         self.__unzip_and_save(zipped_filename, unzipped_filename)
         self.__delete_zipped_file(zipped_filename)
+        print 'Ranger completed successfully'
 
     def __unzip_and_save(self, infile, outfile):
+        print 'Reading file...'
         lines=[]
         with gzip.open(infile,'r') as f:
             for line in f:
                 line_list = line.split('|')
+                if '\n' in line_list:
+                    line_list.remove('\n')
                 lines.append(line_list)
+        print 'Reading file completed'
 
+        print 'Writing file...'
         with open(outfile, 'wb') as f:
-            writer = csv.writer(f, delimiter = ',', quoting = csv.QUOTE_ALL)
+            writer = csv.writer(f, delimiter = '|', quoting = csv.QUOTE_ALL)
             writer.writerows(lines)
+        print 'Writing file completed'
 
     def __delete_zipped_file(self, path):
         os.remove(path)
