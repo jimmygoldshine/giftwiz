@@ -16,7 +16,9 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
+from app.feed_utils import Updater as updater
 from app import views
+import app
 
 router = routers.DefaultRouter()
 router.register(r'products', views.ProductViewSet)
@@ -24,5 +26,7 @@ router.register(r'products', views.ProductViewSet)
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include(router.urls)),
-    url(r'^$', views.api_root)
+    url(r'^',  views.ProductViewSet),
+    url(r'^products/$', views.ProductViewSet),
+    url(r'^tasks/feedscan$', updater.update)
 ]

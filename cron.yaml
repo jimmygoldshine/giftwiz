@@ -1,0 +1,4 @@
+cron:
+- description: "daily feed scan"
+  url: /tasks/feedscan
+  schedule: every 24 hours
